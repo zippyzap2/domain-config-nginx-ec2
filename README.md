@@ -129,6 +129,23 @@ This document outlines the steps to configure a custom domain with an EC2 instan
    ```plaintext
    0 0 * * * certbot renew --quiet && systemctl reload nginx
    ```
+### 6. (Alternate) Use Cloudflare Free SSL
+
+1. Sign up for Cloudflare:
+   - Go to Cloudflare and create a free account.
+2. Add Your Domain:
+   - Add weathertoday.us.to to your Cloudflare account.
+   - Cloudflare will provide new nameservers for your domain.
+3. Update Nameservers:
+   - In your domain registrar (e.g., us.to DNS manager), update the nameservers to those provided by Cloudflare.
+4. Enable SSL in Cloudflare:
+   - Go to the SSL/TLS settings in Cloudflare.
+   - Select Flexible SSL (or Full SSL if your EC2 already has a self-signed certificate).
+5. Test Your Website:
+   - Once the DNS changes propagate, your site will be accessible over HTTPS:
+   ```plaintext
+   https://weathertoday.us.to
+   ```
 
 ## Troubleshooting
 
