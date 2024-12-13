@@ -22,8 +22,16 @@ This document outlines the steps to configure a custom domain with an EC2 instan
 
 ### 1. Point Domain to EC2 Instance
 
-1. **Login to your domain registrar** (e.g., Freedns).
-2. **Update DNS Records**:
+1. **Login to your domain registrar** (e.g., Route53, Freedns).
+   - You can use AWS Route53
+     
+ <img width="500" alt="Screenshot 2024-12-13 at 2 35 20 PM" src="https://github.com/user-attachments/assets/2723025a-aa0c-4671-969a-e150a9adad5f" />
+ 
+   - You can use freedns.afraid.org (for free)
+     
+   <img width="500" alt="Screenshot 2024-12-13 at 3 03 25 PM" src="https://github.com/user-attachments/assets/5656491d-3468-4bd0-9293-70d25d64418a" />
+ 
+3. **Update DNS Records**:
    - Add an A Record:
      - **Type**: `A`
      - **Name**: `@`
@@ -33,9 +41,9 @@ This document outlines the steps to configure a custom domain with an EC2 instan
      - **Type**: `CNAME`
      - **Name**: `www`
      - **Value**: `<yourdomain>` (e.g., `weathertoday.us.to`).
-3. Save changes and wait for DNS propagation (can take a few minutes to a few hours).
+4. Save changes and wait for DNS propagation (can take a few minutes to a few hours).
 
-   
+   <img width="500" alt="Screenshot 2024-12-13 at 2 35 20 PM" src="https://github.com/user-attachments/assets/69792c1c-be7a-4c6e-bebd-990a63afad0a" />
 
 ### 2. Configure Nginx for Your Domain
 
@@ -46,8 +54,11 @@ This document outlines the steps to configure a custom domain with an EC2 instan
 
 2. Edit the Nginx configuration:
    ```bash
-   sudo nano /etc/nginx/sites-available/default
+   sudo vi /etc/nginx/sites-available/default
    ```
+   
+   <img width="500" alt="Screenshot 2024-12-13 at 1 56 16 PM" src="https://github.com/user-attachments/assets/37e46120-bd6d-467f-962c-55e53d4674ee" />
+
 
 3. Update the configuration to include your domain:
    ```nginx
@@ -69,9 +80,15 @@ This document outlines the steps to configure a custom domain with an EC2 instan
    sudo nginx -t
    sudo systemctl restart nginx
    ```
+   
+   <img width="500" alt="Screenshot 2024-12-13 at 1 55 59 PM" src="https://github.com/user-attachments/assets/8b2d2cb8-8402-41df-b796-f15488c63060" />
+
 
 5. Verify the configuration:
    - Open a browser and navigate to `http://weathertoday.us.to`.
+  
+     <img width="500" alt="Screenshot 2024-12-13 at 1 56 56 PM" src="https://github.com/user-attachments/assets/87cb72ef-05e4-4d1e-98d2-21b79284202b" />
+
 
 ### 3. Enable SSL with Let's Encrypt
 
@@ -80,6 +97,9 @@ This document outlines the steps to configure a custom domain with an EC2 instan
    sudo apt update
    sudo apt install certbot python3-certbot-nginx -y
    ```
+   
+   <img width="500" alt="Screenshot 2024-12-13 at 1 58 16 PM" src="https://github.com/user-attachments/assets/0b909886-2ec3-4902-b6a9-49e9cf4d6c5f" />
+
 
 2. Obtain and configure an SSL certificate:
    ```bash
@@ -92,42 +112,6 @@ This document outlines the steps to configure a custom domain with an EC2 instan
 
 4. Test HTTPS:
    - Open a browser and navigate to `https://weathertoday.us.to`.
-
-### 4. Redirect HTTP to HTTPS
-
-1. Edit the Nginx configuration:
-   ```bash
-   sudo nano /etc/nginx/sites-available/default
-   ```
-
-2. Add the following block to redirect HTTP traffic to HTTPS:
-   ```nginx
-   server {
-       listen 80;
-       server_name weathertoday.us.to www.weathertoday.us.to;
-       return 301 https://$host$request_uri;
-   }
-
-   server {
-       listen 443 ssl;
-       server_name weathertoday.us.to www.weathertoday.us.to;
-
-       ssl_certificate /etc/letsencrypt/live/weathertoday.us.to/fullchain.pem;
-       ssl_certificate_key /etc/letsencrypt/live/weathertoday.us.to/privkey.pem;
-
-       root /home/ubuntu/weather-app/frontend/build;
-       index index.html;
-
-       location / {
-           try_files $uri /index.html;
-       }
-   }
-   ```
-
-3. Restart Nginx:
-   ```bash
-   sudo systemctl restart nginx
-   ```
 
 ### 5. Automate SSL Renewal
 
